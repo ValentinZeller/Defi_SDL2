@@ -2,6 +2,8 @@ program defi2;
 {$APPTYPE GUI} //Enlève la console quand on lance le .exe
 {$UNITPATH /SDL2}
 
+// SDL2 par rapport à SDL est une version plus récente qui introduit de nombreux changements comme l'utilisateur de PSDL_Renderer.
+
 //BUT: Collectez les pièces en helicoptere
 //ENTREE: Position de la souris
 //SORTIE: Gagné ou quitter de force
