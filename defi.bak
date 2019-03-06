@@ -1,0 +1,97 @@
+program defi2;
+//BUT:
+//ENTREE:
+//SORTIE:
+
+uses SDL2, SDL2_image;
+
+var
+sdlWindow1 : PSDL_Window;
+sdlRenderer : PSDL_Renderer;
+sdlRect1 : PSDL_Rect;
+sdlTexture1 : PSDL_Texture;
+sdlEvent: PSDL_Event;
+exitloop: boolean = false;
+
+begin
+  //Initialisation de SDL
+  if SDL_Init( SDL_INIT_VIDEO ) < 0 then HALT;
+
+  sdlWindow1 := SDL_CreateWindow( 'Window1', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500, SDL_WINDOW_SHOWN );
+  if sdlWindow1 = nil then HALT;
+
+  sdlRenderer := SDL_CreateRenderer( sdlWindow1, -1, 0 );
+  if sdlRenderer = nil then HALT;
+
+  //Création d'un rectangle vert
+  new( sdlRect1 );
+  sdlRect1^.x := 260; sdlRect1^.y := 10; sdlRect1^.w := 230; sdlRect1^.h := 230;
+  SDL_SetRenderDrawColor( sdlRenderer, 0, 255, 0, 255 );
+  SDL_RenderDrawRect( sdlRenderer, sdlRect1 );
+  SDL_RenderPresent (sdlRenderer);
+
+  //Chargement d'une image bmp
+  sdlTexture1 := IMG_LoadTexture( sdlRenderer, 'assets\rider.bmp' );
+  if sdlTexture1 = nil then HALT;
+  SDL_RenderCopy( sdlRenderer, sdlTexture1, nil, sdlRect1 );
+  SDL_RenderPresent (sdlRenderer);
+
+  //Création d'un rectangle bleu rempli
+  sdlRect1^.x := 10; sdlRect1^.y := 260;
+  SDL_SetRenderDrawBlendMode( sdlRenderer, SDL_BLENDMODE_BLEND );
+  SDL_SetRenderDrawColor( sdlRenderer, 0, 0, 255, 128 );
+  SDL_RenderFillRect( sdlRenderer, sdlRect1 );
+  SDL_RenderPresent( sdlRenderer );
+
+  //Chargement d'une image png
+  sdlTexture1 := IMG_LoadTexture( sdlRenderer, 'assets\helicopter.png' );
+  if sdlTexture1 = nil then HALT;
+  SDL_RenderCopy( sdlRenderer, sdlTexture1, nil, sdlRect1 );
+  SDL_RenderPresent (sdlRenderer);
+  SDL_Delay( 2000 );
+
+  dispose( sdlRect1 );
+  //Destruction des instances
+  SDL_DestroyTexture( sdlTexture1 );
+
+  //Bouger un rectangle avec la souris
+  new( sdlEvent );
+  while exitloop = false do
+  begin
+    while SDL_PollEvent( sdlEvent ) = 1 do
+    begin
+      case sdlEvent^.type_ of
+
+        //Touche du clavier
+        SDL_KEYDOWN: begin
+                       case sdlEvent^.key.keysym.sym of
+                         27: exitloop := true;  // ECHAP pour quitter
+                         end;
+                     end;
+
+        //Mouvement de la souris
+        SDL_MOUSEMOTION: begin
+                           sdlRect1^.x := sdlEvent^.motion.x-100; sdlRect1^.y := sdlEvent^.motion.y-100; sdlRect1^.w := 200; sdlRect1^.h := 200;
+                           SDL_SetRenderDrawColor( sdlRenderer, 0, 0, 255, 128 );
+                           SDL_RenderFillRect( sdlRenderer, sdlRect1 );
+                           SDL_RenderDrawRect( sdlRenderer, sdlRect1 );
+                           SDL_RenderPresent (sdlRenderer);
+                           SDL_Delay( 20 );
+                           SDL_SetRenderDrawColor( sdlRenderer, 255, 255, 255, 255 );
+                           SDL_RenderClear( sdlRenderer );
+                         end;
+
+      end;
+
+    end;
+    SDL_Delay( 20 );
+  end;
+
+  dispose( sdlEvent );
+  dispose( sdlRect1 );
+  SDL_DestroyRenderer( sdlRenderer );
+  SDL_DestroyWindow ( sdlWindow1 );
+
+  SDL_Quit;
+
+end.
